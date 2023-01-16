@@ -3,7 +3,7 @@ Usage
 ```
 $ kubectl modsec
 NAME:
-   modsec - extract modsecurity related information from Kubernetes
+   modsec - extract Modsecurity related information from Kubernetes
 
 USAGE:
    modsec [global options] command [command options] [arguments...]

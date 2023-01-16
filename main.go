@@ -11,7 +11,7 @@ import (
 func main() {
 	app := &cli.App{
 		Name:  "modsec",
-		Usage: "extract modsecurity related information from Kubernetes",
+		Usage: "extract Modsecurity related information from Kubernetes",
 		Commands: []*cli.Command{
 			&cmd.Snippets,
 			&cmd.Logs,
