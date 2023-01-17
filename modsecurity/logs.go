@@ -142,7 +142,7 @@ func (logs Logs) StringTable() string {
 	const format = "%v\t%v\t%v\t%v\t%v\t%v\t%v\n"
 
 	tw := new(tabwriter.Writer).Init(&out, 0, 8, 2, ' ', 0)
-	fmt.Fprintf(tw, format, "Timestamp", "Host", "Client IP", "Method", "URI", "Code", "Modsec messages")
+	fmt.Fprintf(tw, format, "Timestamp", "Host", "Client IP", "Method", "URI", "Code", "Messages")
 
 	for _, l := range logs {
 		fmt.Fprintf(tw, format,
