@@ -14,6 +14,10 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
+const (
+	LabelSelector = "app=ingress-nginx-controller"
+)
+
 type Log struct {
 	Transaction struct {
 		ClientIP  string `json:"client_ip"`
@@ -89,7 +93,7 @@ type Logs []Log
 func GetLogs(clientset *kubernetes.Clientset, httpResponseCode int) (Logs, error) {
 	pods, err := clientset.CoreV1().Pods("").List(context.TODO(),
 		metav1.ListOptions{
-			LabelSelector: "app=ingress-nginx-controller",
+			LabelSelector: LabelSelector,
 		})
 	if err != nil {
 		return nil, err
