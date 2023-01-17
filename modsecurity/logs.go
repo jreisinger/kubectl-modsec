@@ -96,7 +96,6 @@ func GetLogs(clientset *kubernetes.Clientset, httpResponseCode int) (Logs, error
 	}
 
 	var logs []Log
-
 	for _, pod := range pods.Items {
 		req := clientset.CoreV1().Pods(pod.Namespace).GetLogs(pod.Name, &corev1.PodLogOptions{})
 		podLogs, err := req.Stream(context.TODO())
@@ -107,7 +106,7 @@ func GetLogs(clientset *kubernetes.Clientset, httpResponseCode int) (Logs, error
 
 		line := bufio.NewScanner(podLogs)
 		for line.Scan() {
-			if strings.HasPrefix(line.Text(), `{"transaction":`) {
+			if isModsecLog(line.Text()) {
 				var log Log
 				if err := json.Unmarshal(line.Bytes(), &log); err != nil {
 					return nil, err
@@ -126,6 +125,10 @@ func GetLogs(clientset *kubernetes.Clientset, httpResponseCode int) (Logs, error
 		}
 	}
 	return logs, nil
+}
+
+func isModsecLog(line string) bool {
+	return strings.HasPrefix(line, `{"transaction":`)
 }
 
 func (logs Logs) StringJson() string {
