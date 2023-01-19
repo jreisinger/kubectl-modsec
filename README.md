@@ -1,4 +1,4 @@
-Usage
+A kubectl [plugin](https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/).
 
 ```
 $ kubectl modsec
@@ -17,7 +17,7 @@ GLOBAL OPTIONS:
    --help, -h  show help (default: false)
 ```
 
-Installation
+Installation:
 
 ```
 $ go install
