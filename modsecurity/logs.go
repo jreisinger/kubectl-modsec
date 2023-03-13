@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"strings"
 	"text/tabwriter"
+	"time"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -157,7 +158,7 @@ func (logs Logs) StringTable(maxUriLen int) string {
 			ruleIDs = append(ruleIDs, m.Details.RuleID)
 		}
 		fmt.Fprintf(tw, format,
-			l.Transaction.TimeStamp,
+			formatTimestamp(l.Transaction.TimeStamp),
 			l.Transaction.Request.Headers.Host,
 			l.Transaction.ClientIP,
 			l.Transaction.Request.Method,
@@ -170,6 +171,15 @@ func (logs Logs) StringTable(maxUriLen int) string {
 
 	tw.Flush()
 	return out.String()
+}
+
+func formatTimestamp(ts string) string {
+	// Mon Mar 13 11:02:39 2023
+	t, err := time.Parse("Mon Jan 2 15:04:05 2006", ts)
+	if err != nil {
+		return ts
+	}
+	return t.Format("2006-01-02_15:04:05")
 }
 
 // Truncate truncates s and appends ... if s is longer than max.
