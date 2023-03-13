@@ -20,6 +20,11 @@ var Logs = cli.Command{
 			Name:  "code",
 			Usage: "only logs with the HTTP response code",
 		},
+		&cli.IntFlag{
+			Name:  "maxuri",
+			Value: 30,
+			Usage: "truncate URI in table output to this length",
+		},
 	},
 	Action: func(cCtx *cli.Context) error {
 		clientset, err := api.GetClientset()
@@ -34,7 +39,7 @@ var Logs = cli.Command{
 		if cCtx.Bool("json") {
 			fmt.Print(logs.StringJson())
 		} else {
-			fmt.Print(logs.StringTable())
+			fmt.Print(logs.StringTable(cCtx.Int("maxuri")))
 		}
 
 		return nil

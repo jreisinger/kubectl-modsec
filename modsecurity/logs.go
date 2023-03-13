@@ -143,7 +143,7 @@ func (logs Logs) StringJson() string {
 	return string(b)
 }
 
-func (logs Logs) StringTable() string {
+func (logs Logs) StringTable(maxUriLen int) string {
 	var out bytes.Buffer
 
 	const format = "%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\n"
@@ -161,7 +161,7 @@ func (logs Logs) StringTable() string {
 			l.Transaction.Request.Headers.Host,
 			l.Transaction.ClientIP,
 			l.Transaction.Request.Method,
-			l.Transaction.Request.URI,
+			truncate(l.Transaction.Request.URI, maxUriLen),
 			l.Transaction.Response.HTTPCode,
 			l.Transaction.Producer.SecrulesEngine,
 			ruleIDs,
@@ -170,4 +170,12 @@ func (logs Logs) StringTable() string {
 
 	tw.Flush()
 	return out.String()
+}
+
+// Truncate truncates s and appends ... if s is longer than max.
+func truncate(s string, max int) string {
+	if len(s) > max {
+		return s[:max] + "..."
+	}
+	return s
 }
