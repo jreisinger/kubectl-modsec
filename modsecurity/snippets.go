@@ -87,15 +87,15 @@ func GetIngresses(cs *kubernetes.Clientset) (Ingresses, error) {
 	return newIngresses(il.Items), nil
 }
 
-func (i Ingresses) StringJson() string {
-	b, err := json.Marshal(i)
+func (ings Ingresses) StringJson() string {
+	b, err := json.Marshal(ings)
 	if err != nil {
 		return ""
 	}
 	return string(b)
 }
 
-func (i Ingresses) StringTable() string {
+func (ings Ingresses) StringTable() string {
 	var out bytes.Buffer
 
 	const format = "%v\t%v\t%v\t%v\n"
@@ -103,8 +103,11 @@ func (i Ingresses) StringTable() string {
 	tw := new(tabwriter.Writer).Init(&out, 0, 8, 2, ' ', 0)
 	fmt.Fprintf(tw, format, "Namespace", "Ingress", "Hosts", "ModsecSnippet")
 
-	for _, it := range i {
-		fmt.Fprintf(tw, format, it.Namespace, it.Ingress, strings.Join(it.Hosts, ","), strings.Join(it.ModsecSnippet, ";"))
+	for _, ing := range ings {
+		for i := range ing.ModsecSnippet {
+			ing.ModsecSnippet[i] = truncate(ing.ModsecSnippet[i], 40)
+		}
+		fmt.Fprintf(tw, format, ing.Namespace, ing.Ingress, truncate(strings.Join(ing.Hosts, ","), 30), strings.Join(ing.ModsecSnippet, ";"))
 	}
 
 	tw.Flush()

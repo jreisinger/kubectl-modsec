@@ -188,11 +188,3 @@ func formatTimestamp(ts string) string {
 	}
 	return t.Local().Format("2006-01-02_15:04:05")
 }
-
-// Truncate truncates s and appends ... if s is longer than max.
-func truncate(s string, max int) string {
-	if len(s) > max {
-		return s[:max] + "..."
-	}
-	return s
-}
