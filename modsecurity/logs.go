@@ -144,7 +144,7 @@ func (logs Logs) StringJson() string {
 	return string(b)
 }
 
-func (logs Logs) StringTable(maxUriLen int) string {
+func (logs Logs) StringTable() string {
 	var out bytes.Buffer
 
 	const format = "%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\n"
@@ -162,7 +162,7 @@ func (logs Logs) StringTable(maxUriLen int) string {
 			l.Transaction.Request.Headers.Host,
 			l.Transaction.ClientIP,
 			l.Transaction.Request.Method,
-			truncate(l.Transaction.Request.URI, maxUriLen),
+			truncate(l.Transaction.Request.URI, 30),
 			l.Transaction.Response.HTTPCode,
 			l.Transaction.Producer.SecrulesEngine,
 			ruleIDs,
