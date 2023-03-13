@@ -3,7 +3,7 @@ Kubectl-modsec extracts information about [ModSecurity WAF](https://kubernetes.g
 ```
 $ kubectl-modsec
 NAME:
-   modsec - extract ModSecurity WAF related information from Kubernetes
+   modsec - extract ModSecurity WAF information from Kubernetes
 
 USAGE:
    modsec [global options] command [command options] [arguments...]
