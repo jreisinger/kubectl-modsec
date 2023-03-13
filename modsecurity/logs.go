@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sort"
 	"strings"
 	"text/tabwriter"
 	"time"
@@ -145,6 +146,7 @@ func isModsecLog(line string) bool {
 }
 
 func (logs Logs) StringJson() string {
+	sort.Sort(byTimestamp(logs))
 	b, err := json.Marshal(logs)
 	if err != nil {
 		return ""
@@ -160,6 +162,7 @@ func (logs Logs) StringTable() string {
 	tw := new(tabwriter.Writer).Init(&out, 0, 8, 2, ' ', 0)
 	fmt.Fprintf(tw, format, "Timestamp", "Host", "Client IP", "Method", "URI", "Code", "Secrules", "Rule IDs")
 
+	sort.Sort(byTimestamp(logs))
 	for _, l := range logs {
 		var ruleIDs []string
 		for _, m := range l.Transaction.Messages {
@@ -180,6 +183,14 @@ func (logs Logs) StringTable() string {
 	tw.Flush()
 	return out.String()
 }
+
+type byTimestamp Logs
+
+func (x byTimestamp) Len() int { return len(x) }
+func (x byTimestamp) Less(i, j int) bool {
+	return x[i].Transaction.TimeStamp < x[j].Transaction.TimeStamp
+}
+func (x byTimestamp) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
 
 func formatTimestamp(ts string) string {
 	t, err := time.Parse(TimeLayout, ts)
