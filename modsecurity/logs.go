@@ -17,6 +17,7 @@ import (
 
 const (
 	LabelSelector = "app=ingress-nginx-controller"
+	TimeLayout    = "Mon Jan 2 15:04:05 2006"
 )
 
 type Log struct {
@@ -91,7 +92,7 @@ type Log struct {
 
 type Logs []Log
 
-func GetLogs(clientset *kubernetes.Clientset, httpResponseCode int) (Logs, error) {
+func GetLogs(clientset *kubernetes.Clientset, since time.Duration, httpResponseCode int) (Logs, error) {
 	pods, err := clientset.CoreV1().Pods("").List(context.TODO(),
 		metav1.ListOptions{
 			LabelSelector: LabelSelector,
@@ -116,13 +117,20 @@ func GetLogs(clientset *kubernetes.Clientset, httpResponseCode int) (Logs, error
 				if err := json.Unmarshal(line.Bytes(), &log); err != nil {
 					return nil, err
 				}
-				if httpResponseCode != 0 {
-					if log.Transaction.Response.HTTPCode == httpResponseCode {
-						logs = append(logs, log)
-					}
-				} else {
-					logs = append(logs, log)
+
+				t, err := time.Parse(TimeLayout, log.Transaction.TimeStamp)
+				if err != nil {
+					return nil, err
 				}
+				if t.Before(time.Now().Add(-since)) {
+					continue
+				}
+
+				if httpResponseCode != 0 && log.Transaction.Response.HTTPCode != httpResponseCode {
+					continue
+				}
+
+				logs = append(logs, log)
 			}
 		}
 		if line.Err() != nil {
@@ -174,12 +182,11 @@ func (logs Logs) StringTable() string {
 }
 
 func formatTimestamp(ts string) string {
-	// Mon Mar 13 11:02:39 2023
-	t, err := time.Parse("Mon Jan 2 15:04:05 2006", ts)
+	t, err := time.Parse(TimeLayout, ts)
 	if err != nil {
 		return ts
 	}
-	return t.Format("2006-01-02_15:04:05")
+	return t.Local().Format("2006-01-02_15:04:05")
 }
 
 // Truncate truncates s and appends ... if s is longer than max.

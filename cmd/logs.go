@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/jreisinger/kubectl-modsec/api"
 	"github.com/jreisinger/kubectl-modsec/modsecurity"
@@ -16,6 +17,11 @@ var Logs = cli.Command{
 			Name:  "json",
 			Usage: "JSON output with modsecurity message details",
 		},
+		&cli.DurationFlag{
+			Name:  "since",
+			Value: time.Hour * 24,
+			Usage: "only logs newer than a relative duration like 5s, 2m, or 3h",
+		},
 		&cli.IntFlag{
 			Name:  "code",
 			Usage: "only logs with the HTTP response code",
@@ -27,7 +33,7 @@ var Logs = cli.Command{
 			return err
 		}
 
-		logs, err := modsecurity.GetLogs(clientset, cCtx.Int("code"))
+		logs, err := modsecurity.GetLogs(clientset, cCtx.Duration("since"), cCtx.Int("code"))
 		if err != nil {
 			return err
 		}
