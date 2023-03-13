@@ -1,9 +1,9 @@
-A kubectl [plugin](https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/).
+Kubectl-modsec extracts information about [ModSecurity WAF](https://kubernetes.github.io/ingress-nginx/user-guide/third-party-addons/modsecurity/) from Kubernetes. It can be used as a [kubectl plugin](https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/).
 
 ```
-$ kubectl modsec
+$ kubectl-modsec
 NAME:
-   modsec - extract Modsecurity related information from Kubernetes
+   modsec - extract ModSecurity WAF related information from Kubernetes
 
 USAGE:
    modsec [global options] command [command options] [arguments...]
