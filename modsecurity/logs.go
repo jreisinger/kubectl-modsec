@@ -62,12 +62,12 @@ type Log struct {
 			// 			AccessControlMaxAge           string `json:"Access-Control-Max-Age"`
 			// 		} `json:"headers"`
 		} `json:"response"`
-		// 	Producer struct {
-		// 		Modsecurity    string   `json:"modsecurity"`
-		// 		Connector      string   `json:"connector"`
-		// 		SecrulesEngine string   `json:"secrules_engine"`
-		// 		Components     []string `json:"components"`
-		// 	} `json:"producer"`
+		Producer struct {
+			// 		Modsecurity    string   `json:"modsecurity"`
+			// 		Connector      string   `json:"connector"`
+			SecrulesEngine string `json:"secrules_engine"`
+			// 		Components     []string `json:"components"`
+		} `json:"producer"`
 		Messages []struct {
 			Details struct {
 				Accuracy string `json:"accuracy"`
@@ -146,12 +146,16 @@ func (logs Logs) StringJson() string {
 func (logs Logs) StringTable() string {
 	var out bytes.Buffer
 
-	const format = "%v\t%v\t%v\t%v\t%v\t%v\t%v\n"
+	const format = "%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\n"
 
 	tw := new(tabwriter.Writer).Init(&out, 0, 8, 2, ' ', 0)
-	fmt.Fprintf(tw, format, "Timestamp", "Host", "Client IP", "Method", "URI", "Code", "Messages")
+	fmt.Fprintf(tw, format, "Timestamp", "Host", "Client IP", "Method", "URI", "Code", "Secrules", "Rule IDs")
 
 	for _, l := range logs {
+		var ruleIDs []string
+		for _, m := range l.Transaction.Messages {
+			ruleIDs = append(ruleIDs, m.Details.RuleID)
+		}
 		fmt.Fprintf(tw, format,
 			l.Transaction.TimeStamp,
 			l.Transaction.Request.Headers.Host,
@@ -159,7 +163,8 @@ func (logs Logs) StringTable() string {
 			l.Transaction.Request.Method,
 			l.Transaction.Request.URI,
 			l.Transaction.Response.HTTPCode,
-			len(l.Transaction.Messages),
+			l.Transaction.Producer.SecrulesEngine,
+			ruleIDs,
 		)
 	}
 
