@@ -26,6 +26,12 @@ var Logs = cli.Command{
 			Name:  "code",
 			Usage: "only logs with the HTTP response code",
 		},
+		&cli.StringFlag{
+			Name:    "selector",
+			Aliases: []string{"l"},
+			Value:   "app=ingress-nginx-controller",
+			Usage:   "label selector",
+		},
 	},
 	Action: func(cCtx *cli.Context) error {
 		clientset, err := api.GetClientset()
@@ -33,7 +39,7 @@ var Logs = cli.Command{
 			return err
 		}
 
-		logs, err := modsecurity.GetLogs(clientset, cCtx.Duration("since"), cCtx.Int("code"))
+		logs, err := modsecurity.GetLogs(clientset, cCtx.String("selector"), cCtx.Duration("since"), cCtx.Int("code"))
 		if err != nil {
 			return err
 		}

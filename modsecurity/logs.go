@@ -17,8 +17,7 @@ import (
 )
 
 const (
-	LabelSelector = "app=ingress-nginx-controller"
-	TimeLayout    = "Mon Jan 2 15:04:05 2006"
+	TimeLayout = "Mon Jan 2 15:04:05 2006"
 )
 
 type Log struct {
@@ -93,10 +92,10 @@ type Log struct {
 
 type Logs []Log
 
-func GetLogs(clientset *kubernetes.Clientset, since time.Duration, httpResponseCode int) (Logs, error) {
+func GetLogs(clientset *kubernetes.Clientset, labelSelector string, since time.Duration, httpResponseCode int) (Logs, error) {
 	pods, err := clientset.CoreV1().Pods("").List(context.TODO(),
 		metav1.ListOptions{
-			LabelSelector: LabelSelector,
+			LabelSelector: labelSelector,
 		})
 	if err != nil {
 		return nil, err
