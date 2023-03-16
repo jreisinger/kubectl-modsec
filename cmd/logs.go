@@ -26,6 +26,10 @@ var Logs = cli.Command{
 			Name:  "code",
 			Usage: "only logs with the HTTP response code",
 		},
+		&cli.BoolFlag{
+			Name:  "details",
+			Usage: "show details about the match rule in table output",
+		},
 		&cli.StringFlag{
 			Name:    "selector",
 			Aliases: []string{"l"},
@@ -46,7 +50,7 @@ var Logs = cli.Command{
 		if cCtx.Bool("json") {
 			fmt.Print(logs.StringJson())
 		} else {
-			fmt.Print(logs.StringTable())
+			fmt.Print(logs.StringTable(cCtx.Bool("details")))
 		}
 
 		return nil

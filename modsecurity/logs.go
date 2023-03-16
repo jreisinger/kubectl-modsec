@@ -153,7 +153,7 @@ func (logs Logs) StringJson() string {
 	return string(b)
 }
 
-func (logs Logs) StringTable() string {
+func (logs Logs) StringTable(showDetails bool) string {
 	var out bytes.Buffer
 
 	const format = "%v\t%v\t%v\t%v\t%v\t%v\t%v\t%v\n"
@@ -165,7 +165,12 @@ func (logs Logs) StringTable() string {
 	for _, l := range logs {
 		var ruleIDs []string
 		for _, m := range l.Transaction.Messages {
-			ruleIDs = append(ruleIDs, m.Details.RuleID)
+			if m.Details.RuleID != "949110" {
+				if showDetails {
+					m.Details.RuleID = fmt.Sprintf("%s - %q", m.Details.RuleID, m.Details.Data)
+				}
+				ruleIDs = append(ruleIDs, m.Details.RuleID)
+			}
 		}
 		fmt.Fprintf(tw, format,
 			formatTimestamp(l.Transaction.TimeStamp),
@@ -175,7 +180,7 @@ func (logs Logs) StringTable() string {
 			truncate(l.Transaction.Request.URI, 30),
 			l.Transaction.Response.HTTPCode,
 			l.Transaction.Producer.SecrulesEngine,
-			ruleIDs,
+			strings.Join(ruleIDs, ", "),
 		)
 	}
 
