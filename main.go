@@ -13,7 +13,7 @@ func main() {
 		Name:  "modsec",
 		Usage: "extract ModSecurity WAF information from Kubernetes",
 		Commands: []*cli.Command{
-			&cmd.Snippets,
+			&cmd.Ingresses,
 			&cmd.Logs,
 		},
 	}

@@ -111,17 +111,18 @@ func (ings Ingresses) StringJson() string {
 func (ings Ingresses) StringTable() string {
 	var out bytes.Buffer
 
-	const format = "%v\t%v\t%v\n"
+	const format = "%v\t%v\t%v\t%v\n"
 
 	tw := new(tabwriter.Writer).Init(&out, 0, 8, 2, ' ', 0)
-	fmt.Fprintf(tw, format, "Namespace", "Ingress", "ModsecSnippet")
-	fmt.Fprintf(tw, format, "---------", "-------", "-------------")
+	fmt.Fprintf(tw, format, "Namespace", "Ingress", "Host", "Paths")
+	fmt.Fprintf(tw, format, "---------", "-------", "----", "-----")
 
 	for _, ing := range ings {
-		for i := range ing.ModsecSnippet {
-			ing.ModsecSnippet[i] = truncate(ing.ModsecSnippet[i], 70)
+		for _, rule := range ing.Rules {
+			for _, path := range rule.Paths {
+				fmt.Fprintf(tw, format, ing.Namespace, ing.Ingress, rule.Host, path)
+			}
 		}
-		fmt.Fprintf(tw, format, ing.Namespace, ing.Ingress, strings.Join(ing.ModsecSnippet, ";"))
 	}
 
 	tw.Flush()
