@@ -146,7 +146,7 @@ func isModsecLog(line string) bool {
 
 func (logs Logs) StringJson() string {
 	sort.Sort(byTimestamp(logs))
-	b, err := json.Marshal(logs)
+	b, err := json.MarshalIndent(logs, "", "  ")
 	if err != nil {
 		return ""
 	}

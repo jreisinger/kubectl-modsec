@@ -101,7 +101,7 @@ func GetIngresses(cs *kubernetes.Clientset) (Ingresses, error) {
 }
 
 func (ings Ingresses) StringJson() string {
-	b, err := json.Marshal(ings)
+	b, err := json.MarshalIndent(ings, "", "  ")
 	if err != nil {
 		return ""
 	}
