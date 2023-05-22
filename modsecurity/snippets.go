@@ -35,26 +35,26 @@ type Ingress struct {
 	Namespace     string
 	Ingress       string
 	ModsecSnippet []string
-	Hosts         []Host
+	Rules         []Rule
 }
 
-type Host struct {
-	Name  string
+type Rule struct {
+	Host  string
 	Paths []string
 }
 
 func newIngress(in networkingV1.Ingress) Ingress {
-	var hosts []Host
+	var rules []Rule
 	for _, rule := range in.Spec.Rules {
 		var paths []string
 		for _, path := range rule.HTTP.Paths {
 			paths = append(paths, path.Path)
 		}
-		host := Host{
-			Name:  rule.Host,
+		rule := Rule{
+			Host:  rule.Host,
 			Paths: paths,
 		}
-		hosts = append(hosts, host)
+		rules = append(rules, rule)
 	}
 
 	var modsecsnippet []string
@@ -72,7 +72,7 @@ func newIngress(in networkingV1.Ingress) Ingress {
 	return Ingress{
 		Namespace:     in.ObjectMeta.Namespace,
 		Ingress:       in.ObjectMeta.Name,
-		Hosts:         hosts,
+		Rules:         rules,
 		ModsecSnippet: modsecsnippet,
 	}
 }
@@ -91,7 +91,7 @@ func newIngresses(in []networkingV1.Ingress) Ingresses {
 	return ingresses
 }
 
-func GetIngresses(cs *kubernetes.Clientset) (Ingresses, error) {
+func GetIngresses(cs *kubernetes.Clientset, host string) (Ingresses, error) {
 	ii := cs.NetworkingV1().Ingresses("")
 	il, err := ii.List(context.TODO(), v1.ListOptions{})
 	if err != nil {
