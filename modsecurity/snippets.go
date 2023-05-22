@@ -91,7 +91,7 @@ func newIngresses(in []networkingV1.Ingress) Ingresses {
 	return ingresses
 }
 
-func GetIngresses(cs *kubernetes.Clientset, host string) (Ingresses, error) {
+func GetIngresses(cs *kubernetes.Clientset) (Ingresses, error) {
 	ii := cs.NetworkingV1().Ingresses("")
 	il, err := ii.List(context.TODO(), v1.ListOptions{})
 	if err != nil {
