@@ -34,14 +34,27 @@ SecDebugLog /tmp/modsec_debug.log
 type Ingress struct {
 	Namespace     string
 	Ingress       string
-	Hosts         []string
 	ModsecSnippet []string
+	Hosts         []Host
+}
+
+type Host struct {
+	Name  string
+	Paths []string
 }
 
 func newIngress(in networkingV1.Ingress) Ingress {
-	var hosts []string
-	for _, v := range in.Spec.Rules {
-		hosts = append(hosts, v.Host)
+	var hosts []Host
+	for _, rule := range in.Spec.Rules {
+		var paths []string
+		for _, path := range rule.HTTP.Paths {
+			paths = append(paths, path.Path)
+		}
+		host := Host{
+			Name:  rule.Host,
+			Paths: paths,
+		}
+		hosts = append(hosts, host)
 	}
 
 	var modsecsnippet []string
@@ -98,16 +111,17 @@ func (ings Ingresses) StringJson() string {
 func (ings Ingresses) StringTable() string {
 	var out bytes.Buffer
 
-	const format = "%v\t%v\t%v\t%v\n"
+	const format = "%v\t%v\t%v\n"
 
 	tw := new(tabwriter.Writer).Init(&out, 0, 8, 2, ' ', 0)
-	fmt.Fprintf(tw, format, "Namespace", "Ingress", "Hosts", "ModsecSnippet")
+	fmt.Fprintf(tw, format, "Namespace", "Ingress", "ModsecSnippet")
+	fmt.Fprintf(tw, format, "---------", "-------", "-------------")
 
 	for _, ing := range ings {
 		for i := range ing.ModsecSnippet {
-			ing.ModsecSnippet[i] = truncate(ing.ModsecSnippet[i], 40)
+			ing.ModsecSnippet[i] = truncate(ing.ModsecSnippet[i], 70)
 		}
-		fmt.Fprintf(tw, format, ing.Namespace, ing.Ingress, truncate(strings.Join(ing.Hosts, ","), 30), strings.Join(ing.ModsecSnippet, ";"))
+		fmt.Fprintf(tw, format, ing.Namespace, ing.Ingress, strings.Join(ing.ModsecSnippet, ";"))
 	}
 
 	tw.Flush()

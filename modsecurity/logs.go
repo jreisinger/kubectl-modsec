@@ -160,6 +160,7 @@ func (logs Logs) StringTable(showDetails bool) string {
 
 	tw := new(tabwriter.Writer).Init(&out, 0, 8, 2, ' ', 0)
 	fmt.Fprintf(tw, format, "Timestamp", "Host", "Client IP", "Method", "URI", "Code", "Secrules", "Rule IDs")
+	fmt.Fprintf(tw, format, "---------", "----", "---------", "------", "---", "----", "--------", "--------")
 
 	sort.Sort(byTimestamp(logs))
 	for _, l := range logs {
