@@ -114,8 +114,8 @@ func (ings Ingresses) StringTable() string {
 	const format = "%v\t%v\t%v\t%v\n"
 
 	tw := new(tabwriter.Writer).Init(&out, 0, 8, 2, ' ', 0)
-	fmt.Fprintf(tw, format, "Namespace", "Ingress", "Host", "Paths")
-	fmt.Fprintf(tw, format, "---------", "-------", "----", "-----")
+	fmt.Fprintf(tw, format, "Namespace", "Ingress", "Host", "Path")
+	fmt.Fprintf(tw, format, "---------", "-------", "----", "----")
 
 	for _, ing := range ings {
 		for _, rule := range ing.Rules {
